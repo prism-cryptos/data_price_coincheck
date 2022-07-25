@@ -1,6 +1,7 @@
 # data_price_coincheck
 
 ## Overview
+You can use these scripts to get price data of cryptocurrency handled by Coincheck.
 
 ## environment
 * VS code version:1.69.2  
@@ -10,13 +11,17 @@
 
 ## Usage
 
-## Features
+```python
+# If you would get closing price...
+python coincheck_daily_closing_price_in_all_years.py
 
-
+# If you would get high-frequency data every month...
+python coincheck_high_frequency_data_one_month.py
+```
 
 ## Author
 
-[twitter(@prism_cryptos)](https://twitter.com/prism_cryptos)
+[@prism_cryptos](https://twitter.com/prism_cryptos)
 
 ## License
 
