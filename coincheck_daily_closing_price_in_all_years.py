@@ -6,6 +6,8 @@ import pandas as pd
 options = webdriver.ChromeOptions()
 options.add_argument('--headless')
 options.add_argument('--disable-extensions')
+options.add_argument('--disable-dev-shm-usage')
+options.add_argument('--disable-gpu')
 options.add_argument('--blink-settings=imagesEnabled=false')
 options.add_argument('--no-sandbox')
 options.add_argument('--log-level=3')
@@ -13,11 +15,10 @@ options.page_load_strategy = 'eager' #https://www.selenium.dev/ja/documentation/
 
 all_year_data = pd.DataFrame()
 
-for y in range(9): #When I wrote this script, 9 is a good parameter(the number of years).
+for y in range(9): #When I wrote this script, 9 is a good parameter(the number of showed years on the website).
 
     for m in range (12):
 
-        time.sleep(1)
         driver = webdriver.Chrome('./chromedriver.exe', options=options)
         driver.implicitly_wait(5)
         driver.get("https://coincheck.com/ja/exchange/closing_prices")
@@ -47,11 +48,12 @@ for y in range(9): #When I wrote this script, 9 is a good parameter(the number o
         #retreive only btc price(needs adjustment later)
         BTC_price = []
         for n in range(date.size):
-            if n == 0:
+            if n == 0:   #0 means upper left-hand corner of the price data. So I choose BTC price by specifing 0 as a parameter.
                 BTC_price.append(prices[n])   
             else:
-                hoge = n * 22
+                hoge = n * 23   #This parameter 23 is depend on the number of cryptocurrencies handled by Coincheck. 
                 BTC_price.append(prices[hoge])
+                print(prices[hoge])
         BTC_price = pd.DataFrame(BTC_price)
 
         for_append = pd.DataFrame(pd.concat([date, BTC_price], axis=1, ignore_index = True))
