@@ -19,8 +19,9 @@ for y in range(9): #When I wrote this script, 9 is a good parameter(the number o
 
     for m in range (12):
 
+        time.sleep(5)
         driver = webdriver.Chrome('./chromedriver.exe', options=options)
-        driver.implicitly_wait(5)
+        driver.implicitly_wait(10)
         driver.get("https://coincheck.com/ja/exchange/closing_prices")
 
         #select year pulldown option and get label text which correspond to value
@@ -53,12 +54,14 @@ for y in range(9): #When I wrote this script, 9 is a good parameter(the number o
             else:
                 hoge = n * 23   #This parameter 23 is depend on the number of cryptocurrencies handled by Coincheck. 
                 BTC_price.append(prices[hoge])
-                print(prices[hoge])
         BTC_price = pd.DataFrame(BTC_price)
+        print(BTC_price)
 
         for_append = pd.DataFrame(pd.concat([date, BTC_price], axis=1, ignore_index = True))
         all_year_data = pd.DataFrame(pd.concat([all_year_data, for_append], axis=0, ignore_index = True))
         driver.quit()
+
+
 
 all_year_data.to_csv("coincheck_daily_closing_price.csv")
 
