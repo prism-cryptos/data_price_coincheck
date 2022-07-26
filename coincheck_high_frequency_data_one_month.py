@@ -5,7 +5,6 @@ from selenium.webdriver.support.ui import Select
 import pandas as pd
 
 warnings.simplefilter("ignore")
-
 options = webdriver.ChromeOptions()
 options.add_argument('--headless')
 options.add_argument('--disable-extensions')
