@@ -6,7 +6,7 @@ import pandas as pd
 
 warnings.simplefilter("ignore")
 options = webdriver.ChromeOptions()
-options.add_argument('--headless')
+#options.add_argument('--headless')
 options.add_argument('--disable-extensions')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--disable-gpu')
@@ -17,18 +17,20 @@ options.page_load_strategy = 'eager' #https://www.selenium.dev/ja/documentation/
 
 def scrapeing_HFT(y,m):
     global HFT_data
+    global reference
+    global date
 
     for d in range(31):
+        
         d = int(d) + 1
+
+        driver = webdriver.Chrome('./chromedriver.exe', options=options)
+        driver.implicitly_wait(10)
+        driver.get("https://coincheck.com/ja/exchange/rates")
 
         for h in range(24): #set hour 00:mm ~ 23:mm
             for min in range(12): # set time hh:00~hh:55
                 min = int(min * 5)
-                
-                time.sleep(1)
-                driver = webdriver.Chrome('./chromedriver.exe', options=options)
-                driver.implicitly_wait(10)
-                driver.get("https://coincheck.com/ja/exchange/rates")
                     
                 #adjustment date format
                 if len(str(m)) == 1:
@@ -53,10 +55,11 @@ def scrapeing_HFT(y,m):
 
                 #click search button
                 search = driver.find_element_by_xpath("//div[@class = 'rates-inner']/div[@class = 'row']/button")
-                search.click()
+                driver.execute_script("arguments[0].click();", search) #search this clause
+                time.sleep(1)
 
-                try:
-                    #get date and price values
+                #get date and price values
+                if  (str(h) + ":" + str(min)) == "00:00":
                     date_element = driver.find_elements_by_xpath("//div[@class = 'rates-inner']/div[@ng-if = 'result']/div[@class = 'datetime ng-binding']")
                     date = date_element[0].text   #https://syachiku.net/selenimumattributeerror-list-object-has-no-attribute-text/
 
@@ -65,17 +68,38 @@ def scrapeing_HFT(y,m):
 
                     day_data = pd.DataFrame([[date, price]])
                     HFT_data = pd.DataFrame(pd.concat([HFT_data, day_data], axis=0, ignore_index = True))
-
+                    
                     #check output_2
-                    print(day_data) 
-                except:
-                    pass
+                    print(day_data)
+                    reference == date
 
-                driver.quit()               
+                else:
+                    date_element = driver.find_elements_by_xpath("//div[@class = 'rates-inner']/div[@ng-if = 'result']/div[@class = 'datetime ng-binding']")
+                    date = date_element[0].text   #https://syachiku.net/selenimumattributeerror-list-object-has-no-attribute-text/
+
+                    while date == reference:
+                        date_element = driver.find_elements_by_xpath("//div[@class = 'rates-inner']/div[@ng-if = 'result']/div[@class = 'datetime ng-binding']")
+                        date = date_element[0].text   #https://syachiku.net/selenimumattributeerror-list-object-has-no-attribute-text/
+                        date = reference
+                        print(date)
+                    else:
+                        price_element = driver.find_elements_by_xpath("//div[@class = 'rates-inner']/div[@ng-if = 'result']/div[@class = 'result-data']/div[@class = 'rate']/span[@class = 'num ng-binding']")
+                        price = price_element[0].text
+
+                        day_data = pd.DataFrame([[date, price]])
+                        HFT_data = pd.DataFrame(pd.concat([HFT_data, day_data], axis=0, ignore_index = True))
+                        
+                        #check output_2
+                        print(day_data) 
+
+        driver.quit()        
 
 #Run
 HFT_data = pd.DataFrame()
-y = 2020
-m = 2
+reference = None
+date = None
+
+y = 2021
+m = 12
 scrapeing_HFT(y,m)
 HFT_data.to_csv("D:\coincheck_HFT_data_BTCJPY\\" + str(y) + "-" + str(m) + ".csv")
