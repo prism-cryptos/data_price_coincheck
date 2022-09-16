@@ -19,8 +19,10 @@ def scrapeing_HFT(y,m):
     global HFT_data
     global reference
     global date
+    global cryptocurrency
+    global trading_pair_text
 
-    for d in range(31):
+    for d in range(1):
         
         d = int(d) + 1
 
@@ -44,6 +46,13 @@ def scrapeing_HFT(y,m):
                 
                 #check output_1
                 #print(str(y) + "-" + str(m) + "-" + str(d) + " " + str(h) + ":" + str(min))
+
+                #select one trading pair option
+                trading_pair = driver.find_element_by_xpath("//div[@class = 'rates-inner']/div[@class = 'row']/div[@class = 'pairs']/span[@class = 'select-box']/select")
+                Select(trading_pair).select_by_value(str(cryptocurrency))   #https://qiita.com/oh_rusty_nail/items/9afb124e423e9e12c020
+                trading_pair_text = Select(trading_pair).options[cryptocurrency].text
+                trading_pair_text = trading_pair_text.replace("/","")
+                print(trading_pair_text)
 
                 #select date_year_month_day input option
                 y_m_d = driver.find_element_by_xpath("//div[@class = 'rates-inner']/div[@class = 'row']/div[@class = 'datetime']/input[@ng-model = 'datetime']")
@@ -108,5 +117,28 @@ date = None
 
 y = 2021
 m = 11
+cryptocurrency = 0
+
 scrapeing_HFT(y,m)
-HFT_data.to_csv("D:\coincheck_HFT_data_BTCJPY\\" + str(y) + "-" + str(m) + ".csv")
+HFT_data.to_csv("D:\coincheck_HFT_data_" + str(trading_pair_text) +"\\" + str(y) + "-" + str(m) + ".csv")
+
+#cryptocurrency option number
+# BTC/JPY  --- 0
+# ETH/JPY  --- 1
+# ETC/JPY  --- 2
+# LSK/JPY  --- 3
+# XRP/JPY  --- 4
+# XEM/JPY  --- 5
+# LTC/JPY  --- 6
+# BCH/JPY  --- 7
+# MONA/JPY --- 8
+# XLM/JPY  --- 9
+# QTUM/JPY --- 10
+# BAT/JPY  --- 11
+# IOST/JPY --- 12
+# ENJ/JPY  --- 13
+# OMG/JPY  --- 14
+# XYM/JPY  --- 15
+# SAND/JPY --- 16
+# DOT/JPY  --- 17
+# PLT/JPY  --- 18
